@@ -79,7 +79,7 @@ client.on(Events.MessageCreate, async (message) => {
         message.reply(`Joined **${voiceChannel.name}**`);
     }
 
-    if (command === 'dc') {
+    if (command === 'dcn') {
         const guildId = message.guild.id;
         if (connections[guildId]) {
             connections[guildId].connection.destroy();
