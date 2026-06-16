@@ -14,13 +14,15 @@ const client = new Client({
 
 const PREFIX = '.';
 const connections = {};
+const processed = new Set();
 
 client.once(Events.ClientReady, (c) => {
     console.log(`Logged in as ${c.user.tag}`);
 });
 
 client.on(Events.MessageCreate, async (message) => {
-    if (message.author.bot || !message.content.startsWith(PREFIX)) return;
+    if (message.author.bot || !message.content.startsWith(PREFIX) || processed.has(message.id)) return;
+    processed.add(message.id);
 
     const args = message.content.slice(PREFIX.length).trim().split(/ +/);
     const command = args.shift().toLowerCase();
@@ -85,8 +87,6 @@ client.on(Events.MessageCreate, async (message) => {
             connections[guildId].connection.destroy();
             delete connections[guildId];
             message.reply('Disconnected');
-        } else {
-            message.reply('Not in a voice channel.');
         }
     }
 });
