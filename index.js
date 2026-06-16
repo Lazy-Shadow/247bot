@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { Client, GatewayIntentBits, Events } = require('discord.js');
+const { Client, GatewayIntentBits, Events, PermissionsBitField } = require('discord.js');
 const { joinVoiceChannel, createAudioPlayer, VoiceConnectionStatus, entersState } = require('@discordjs/voice');
 
 const client = new Client({
@@ -12,6 +12,7 @@ const client = new Client({
 });
 
 const PREFIX = '.';
+const ADMIN_USERS = ['754329330602999968'];
 const connections = {};
 const processed = new Set();
 
@@ -62,6 +63,10 @@ client.on(Events.MessageCreate, async (message) => {
     }
 
     if (command === 'dcn') {
+        const isAdmin = message.member.permissions.has(PermissionsBitField.Flags.Administrator);
+        if (!ADMIN_USERS.includes(message.author.id) && !isAdmin) {
+            return message.reply('You do not have permission to use this command.');
+        }
         const guildId = message.guild.id;
         if (connections[guildId]) {
             connections[guildId].connection.destroy();
