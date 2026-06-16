@@ -33,7 +33,7 @@ client.on(Events.MessageCreate, async (message) => {
         const guildId = voiceChannel.guild.id;
 
         if (connections[guildId]) {
-            connections[guildId].connection.destroy();
+            return message.reply('I\'m already in a voice channel!');
         }
 
         const connection = joinVoiceChannel({
