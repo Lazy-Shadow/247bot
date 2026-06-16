@@ -46,24 +46,14 @@ client.on(Events.MessageCreate, async (message) => {
         const player = createAudioPlayer();
         connection.subscribe(player);
 
-        const silence = Buffer.alloc(3840, 0);
+        const opusSilence = Buffer.from([0xFC, 0xFF, 0xFE]);
         const stream = new Readable({
             read() {
-                this.push(silence);
+                this.push(opusSilence);
             }
         });
-        const resource = createAudioResource(stream, { inputType: 'raw' });
+        const resource = createAudioResource(stream, { inputType: 'opus' });
         player.play(resource);
-
-        player.on(AudioPlayerStatus.Idle, () => {
-            const s = Buffer.alloc(3840, 0);
-            const st = new Readable({
-                read() {
-                    this.push(s);
-                }
-            });
-            player.play(createAudioResource(st, { inputType: 'raw' }));
-        });
 
         connection.on(VoiceConnectionStatus.Disconnected, async () => {
             try {
