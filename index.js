@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { Client, GatewayIntentBits, Events, PermissionsBitField } = require('discord.js');
+const { Client, GatewayIntentBits, Events } = require('discord.js');
 const { joinVoiceChannel, createAudioPlayer, VoiceConnectionStatus, entersState } = require('@discordjs/voice');
 
 const client = new Client({
@@ -12,7 +12,6 @@ const client = new Client({
 });
 
 const PREFIX = '.';
-const ADMIN_USERS = ['754329330602999968'];
 const connections = {};
 const processed = new Set();
 
@@ -63,15 +62,17 @@ client.on(Events.MessageCreate, async (message) => {
     }
 
     if (command === 'dcn') {
-        if (!ADMIN_USERS.includes(message.author.id) && !message.member?.permissions.has(PermissionsBitField.Flags.Administrator)) {
-            return;
-        }
         const guildId = message.guild.id;
-        if (connections[guildId]) {
-            connections[guildId].connection.destroy();
-            delete connections[guildId];
-            message.reply('Disconnected');
+        const conn = connections[guildId];
+        if (!conn) return;
+        const botChannelId = conn.connection.joinConfig.channelId;
+        const userChannelId = message.member?.voice.channelId;
+        if (!userChannelId || userChannelId !== botChannelId) {
+            return message.reply('You must be in the same voice channel as the bot to disconnect it.');
         }
+        conn.connection.destroy();
+        delete connections[guildId];
+        message.reply('Disconnected');
     }
 });
 
