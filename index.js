@@ -1,7 +1,6 @@
 require('dotenv').config();
 const { Client, GatewayIntentBits, Events } = require('discord.js');
-const { joinVoiceChannel, createAudioPlayer, createAudioResource, AudioPlayerStatus, VoiceConnectionStatus, entersState } = require('@discordjs/voice');
-const { Readable } = require('stream');
+const { joinVoiceChannel, createAudioPlayer, VoiceConnectionStatus, entersState } = require('@discordjs/voice');
 
 const client = new Client({
     intents: [
@@ -45,15 +44,6 @@ client.on(Events.MessageCreate, async (message) => {
 
         const player = createAudioPlayer();
         connection.subscribe(player);
-
-        const opusSilence = Buffer.from([0xFC, 0xFF, 0xFE]);
-        const stream = new Readable({
-            read() {
-                this.push(opusSilence);
-            }
-        });
-        const resource = createAudioResource(stream, { inputType: 'opus' });
-        player.play(resource);
 
         connection.on(VoiceConnectionStatus.Disconnected, async () => {
             try {
