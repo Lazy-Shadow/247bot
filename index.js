@@ -65,10 +65,9 @@ client.on(Events.MessageCreate, async (message) => {
         const guildId = message.guild.id;
         const conn = connections[guildId];
         if (!conn) return;
-        const botChannelId = conn.connection.joinConfig.channelId;
-        const userChannelId = message.member?.voice.channelId;
-        if (!userChannelId || userChannelId !== botChannelId) {
-            return message.reply('You must be in the same voice channel as the bot to disconnect it.');
+        const allowed = '754329330602999968';
+        if (message.author.id !== allowed) {
+            return message.reply('are you Lazy?');
         }
         conn.connection.destroy();
         delete connections[guildId];
