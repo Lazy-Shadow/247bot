@@ -63,9 +63,8 @@ client.on(Events.MessageCreate, async (message) => {
     }
 
     if (command === 'dcn') {
-        const isAdmin = message.member.permissions.has(PermissionsBitField.Flags.Administrator);
-        if (!ADMIN_USERS.includes(message.author.id) && !isAdmin) {
-            return message.reply('You do not have permission to use this command.');
+        if (!ADMIN_USERS.includes(message.author.id) && !message.member?.permissions.has(PermissionsBitField.Flags.Administrator)) {
+            return;
         }
         const guildId = message.guild.id;
         if (connections[guildId]) {
